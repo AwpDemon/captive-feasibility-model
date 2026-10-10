@@ -1,0 +1,515 @@
+# =============================================================================
+# Captive feasibility model - ALL assumptions live in this one file.
+#
+# The company is HYPOTHETICAL. Loss assumptions are illustrative, anchored to the
+# public benchmarks listed under `sources:` at the bottom. Every value that is not
+# backed by a cited source is tagged `assumption` in `sources:` (and anything not
+# listed there at all is treated as an assumption by the Excel/README generators).
+# Scenarios, stress tests and the tornado chart apply dotted-path overrides to a
+# copy of this file; they never edit it.
+# =============================================================================
+
+meta:
+  model_version: "1.0.0"
+  seed: 20261010            # fixed seed -> every number in the README is reproducible
+  n_sims: 50000             # Monte Carlo paths (each path = 5 policy years + run-off)
+  horizon_years: 5          # policy years written (losses run off to full payment)
+  sensitivity_sims: 50000   # same paths re-used for tornado/scenario runs (common random numbers)
+
+company:
+  name: "HypoMfg, Inc. (hypothetical)"
+  description: "Hypothetical US middle-market metal-products manufacturer"
+  revenue: 50000000
+  employees: 210            # ~210 FTE
+  payroll: 11500000
+  fleet_power_units: 25
+  property_tiv: 40000000    # total insured value, buildings + contents + BI
+  hq_state: "Georgia (hypothetical)"
+  exposure_scale: 1.0       # multiplies every claim frequency; used for the break-even-size analysis
+
+economics:
+  discount_rate: 0.06       # parent's after-tax opportunity cost of cash (~8% pre-tax borrowing x (1-25%)); WACC view in a scenario
+  investment_yield: 0.045   # captive's net investment yield on its assets (short-duration fixed income)
+  tax_rate_parent: 0.25     # 21% federal + ~4% blended state (net of federal benefit)
+  tax_rate_captive: 0.21    # federal only; onshore captive domiciles levy premium tax instead of income tax
+  loc_fee_rate: 0.01        # annual bank fee on letters of credit posted as collateral
+  common_shock_cv: 0.10     # CV of a per-year multiplier shared by all lines (cross-line correlation)
+
+adjustments:                # global multipliers used by stress tests and the tornado
+  frequency_multiplier: 1.0
+  severity_multiplier: 1.0
+
+# -----------------------------------------------------------------------------
+# Lines of coverage. Each line = one or more claim components
+# (attritional + large), each with a frequency and a severity distribution.
+# Severity is ground-up per occurrence for policy year 1; trends apply after.
+# -----------------------------------------------------------------------------
+lines:
+  workers_comp:
+    label: "Workers' compensation"
+    per_occurrence_limit: 1000000      # statutory WC is unlimited; losses above $1M are rare enough to ignore here
+    frequency_trend: 0.0
+    severity_trend: 0.04               # NCCI: +4% medical and indemnity severity, AY2025
+    gc_loss_ratio: 0.55                # loss ratio the market builds into a guaranteed-cost premium
+    excess_loss_ratio: 0.45            # excess-of-retention layers carry a heavier load
+    excess_min_premium: 15000
+    payout_pattern: [0.30, 0.25, 0.15, 0.10, 0.07, 0.05, 0.04, 0.04]
+    components:
+      - name: medical_only
+        frequency: {dist: negbin, mean: 6.0, vmr: 1.3}
+        severity: {dist: lognormal, mean: 1500, cv: 1.5}
+      - name: lost_time
+        frequency: {dist: negbin, mean: 2.0, vmr: 1.3}
+        severity: {dist: lognormal, mean: 62000, cv: 2.5}
+  auto_liability:
+    label: "Commercial auto liability"
+    per_occurrence_limit: 1000000
+    frequency_trend: 0.0
+    severity_trend: 0.06               # social inflation in liability lines
+    gc_loss_ratio: 0.68
+    excess_loss_ratio: 0.50
+    excess_min_premium: 15000
+    payout_pattern: [0.30, 0.30, 0.20, 0.10, 0.05, 0.05]
+    components:
+      - name: attritional
+        frequency: {dist: negbin, mean: 3.0, vmr: 1.2}
+        severity: {dist: lognormal, mean: 12000, cv: 2.0}
+      - name: large
+        frequency: {dist: poisson, mean: 0.06}
+        severity: {dist: pareto, xm: 150000, alpha: 1.6}
+  general_liability:
+    label: "General & products liability"
+    per_occurrence_limit: 1000000
+    frequency_trend: 0.0
+    severity_trend: 0.06
+    gc_loss_ratio: 0.65
+    excess_loss_ratio: 0.50
+    excess_min_premium: 15000
+    payout_pattern: [0.10, 0.20, 0.20, 0.15, 0.12, 0.10, 0.08, 0.05]
+    components:
+      - name: attritional
+        frequency: {dist: negbin, mean: 1.5, vmr: 1.3}
+        severity: {dist: lognormal, mean: 15000, cv: 2.5}
+      - name: large
+        frequency: {dist: poisson, mean: 0.04}
+        severity: {dist: pareto, xm: 250000, alpha: 1.7}
+  property:
+    label: "Property (non-catastrophe)"
+    per_occurrence_limit: 5000000      # scheduled limit; cat perils assumed placed separately in all programs
+    frequency_trend: 0.0
+    severity_trend: 0.03
+    gc_loss_ratio: 0.55
+    excess_loss_ratio: 0.45
+    excess_min_premium: 25000
+    payout_pattern: [0.70, 0.30]
+    components:
+      - name: attritional
+        frequency: {dist: negbin, mean: 1.0, vmr: 1.2}
+        severity: {dist: lognormal, mean: 25000, cv: 1.5}
+      - name: large
+        frequency: {dist: poisson, mean: 0.03}
+        severity: {dist: pareto, xm: 500000, alpha: 1.5}
+
+# -----------------------------------------------------------------------------
+# Frictional costs shared by the programs
+# -----------------------------------------------------------------------------
+program_costs:
+  market_rate_multiplier: 1.0     # >1 = hard market (scenario lever)
+  claims_handling_rate: 0.10      # TPA / claims handling as % of retained losses (LD and captive)
+  ld_admin_fee_rate: 0.07         # insurer's charge for issuing paper on the deductible layer (filings, assessments, credit risk), % of expected deductible losses; set equal to the fronting fee so neither structure is favoured
+  fronting_fee_rate: 0.07         # fronting insurer's fee, % of premium ceded to the captive
+  fronting_fee_min: 50000         # minimum annual fronting fee
+  collateral_factor: 1.25         # collateral = 125% of (outstanding reserves + next year's expected losses)
+  captive_formation_cost: 100000  # feasibility study, actuarial, legal, business plan (one-time)
+  captive_annual_opex: 110000     # captive manager, audit, actuarial opinion, tax prep, legal (per year)
+  captive_runoff_opex_fraction: 0.25  # run-off years cost a quarter of a live year
+  cell_captive:                   # rent-a-captive / protected cell alternative (all assumptions)
+    setup_fee: 25000
+    annual_fee: 60000
+    runoff_annual_fee: 20000
+    min_capital: 100000
+
+captive:
+  base_domicile: vermont
+  tax_mode: insurance            # insurance | self_insurance | 831b  (see INTERVIEW_GUIDE for meaning)
+  premium_tax_basis: assumed_reinsurance   # fronted structure: captive reinsures the fronting insurer
+  risk_margin: 0.10              # loss pick loaded 10% above expected (premium ~ 60-70th percentile)
+  capital_var_level: 0.99        # capital >= 1-in-100 year-1 retained loss in excess of the funded loss pick
+  max_premium_to_surplus: 3.0    # regulator-style leverage guide: premium <= 3x surplus
+
+tax_rules:
+  section_831b_premium_limit: 2900000      # filled from IRS Rev. Proc. (see sources)
+  micro_captive_loss_ratio_flag: 0.60      # indicative flag only; the final regs use a 10-year computation period
+
+# -----------------------------------------------------------------------------
+# Domiciles. Regulatory figures carry citations in `sources:`; operating-cost
+# adjustments and travel are assumptions.
+# premium_tax brackets: tax = sum over bands of (premium in band x rate), floored at min_tax, capped at max_tax
+# -----------------------------------------------------------------------------
+domiciles:
+  vermont:
+    name: "Vermont"
+    onshore: true
+    min_capital: 250000                 # 8 V.S.A. 6004 (verified)
+    application_fee: 6500               # $500 statutory fee + $6,000 DFR actuarial application review (2019 chart)
+    annual_license_fee: 500             # 8 V.S.A. 6002 (verified)
+    annual_operating_cost_adjustment: 0
+    annual_travel_cost: 6000            # assumption: annual board meeting must be held in Vermont
+    federal_excise_tax_rate: 0.0
+    board_meeting: "At least one board meeting each year in Vermont (8 V.S.A. 6002(b))"
+    premium_tax:                        # 8 V.S.A. 6014 (verified); min/max apply to the aggregate annual tax
+      direct:
+        brackets: [{up_to: 20000000, rate: 0.0038}, {up_to: 40000000, rate: 0.00285}, {up_to: 60000000, rate: 0.0019}, {up_to: null, rate: 0.00072}]
+        min_tax: 7500
+        max_tax: 200000
+      assumed_reinsurance:
+        brackets: [{up_to: 20000000, rate: 0.00214}, {up_to: 40000000, rate: 0.00143}, {up_to: 60000000, rate: 0.00048}, {up_to: null, rate: 0.00024}]
+        min_tax: 7500
+        max_tax: 200000
+  north_carolina:
+    name: "North Carolina"
+    onshore: true
+    min_capital: 250000                 # G.S. 58-10-370 (verified)
+    application_fee: 0                  # NCDOI: no captive fees except SPFC (regulator site)
+    annual_license_fee: 0
+    annual_operating_cost_adjustment: 0
+    annual_travel_cost: 2000            # assumption: board-meeting requirement waived with two NC service providers
+    federal_excise_tax_rate: 0.0
+    board_meeting: "Annual board meeting in NC, waived if two NC-based service providers are used (G.S. 58-10-345(b))"
+    premium_tax:                        # G.S. 105-228.4A (verified)
+      direct:
+        brackets: [{up_to: 20000000, rate: 0.004}, {up_to: null, rate: 0.003}]
+        min_tax: 5000
+        max_tax: 100000
+      assumed_reinsurance:
+        brackets: [{up_to: 20000000, rate: 0.00225}, {up_to: 40000000, rate: 0.0015}, {up_to: 60000000, rate: 0.0005}, {up_to: null, rate: 0.00025}]
+        min_tax: 5000
+        max_tax: 100000
+  utah:
+    name: "Utah"
+    onshore: true
+    min_capital: 250000                 # Utah Code 31A-37-204 (verified; a 20%-of-aggregate-risk alternative exists)
+    application_fee: 200                # Utah Insurance Dept. web page
+    annual_license_fee: 7500            # flat fee in lieu of premium tax (Utah Insurance Dept. web page)
+    annual_operating_cost_adjustment: 0
+    annual_travel_cost: 6000            # assumption: annual in-state board meeting (or UCIA membership)
+    federal_excise_tax_rate: 0.0
+    board_meeting: "Annual governing-body meeting in Utah with an out-of-state attendee, or top-tier UCIA membership"
+    premium_tax: {}                     # no premium tax; flat annual fee instead (31A-3-304)
+  bermuda:
+    name: "Bermuda (Class 1, 953(d) election)"
+    onshore: false
+    min_capital: 120000                 # Insurance Act 1978 s.7 / solvency Figure A (verified)
+    application_fee: 3050               # $800 application + $2,250 Class 1 registration (BMA 2025 fees)
+    annual_license_fee: 2250            # BMA 2025 fee schedule
+    annual_operating_cost_adjustment: 15000   # assumption: offshore manager, 953(d) compliance and US tax filings
+    annual_travel_cost: 15000           # assumption: governance substance / board travel
+    federal_excise_tax_rate: 0.0        # 953(d) electing company is treated as domestic -> no FET (interpretation; see sources)
+    board_meeting: "No in-domicile board meeting requirement found for Class 1; principal office + BMA-approved principal representative"
+    premium_tax: {}                     # no Bermuda premium tax (secondary sources only)
+  cayman:
+    name: "Cayman Islands (Class B(i), 953(d) election)"
+    onshore: false
+    min_capital: 100000                 # CIMA capital & solvency regs, Schedule 1 (verified)
+    application_fee: 1220               # CI$1,000 = US$1,219.51 (CIMA fee schedule 1 Jan 2026)
+    annual_license_fee: 12744           # CI$10,450 = US$12,743.90 (CIMA fee schedule 1 Jan 2026)
+    annual_operating_cost_adjustment: 10000   # assumption: offshore manager and 953(d) compliance
+    annual_travel_cost: 15000           # assumption
+    federal_excise_tax_rate: 0.0        # 953(d) election assumed (see Bermuda note)
+    board_meeting: "No board-meeting requirement found; must appoint a Cayman insurance manager (Insurance Law s.6)"
+    premium_tax: {}                     # none found in the Insurance Law (absence, not an affirmative statement)
+
+# -----------------------------------------------------------------------------
+# Programs compared. Retentions are per occurrence, by line. A line with no
+# retention is fully insured at the guaranteed-cost price inside that program.
+# -----------------------------------------------------------------------------
+programs:
+  - id: gc
+    label: "Guaranteed cost"
+    type: guaranteed_cost
+  - id: ld_250
+    label: "Large deductible $250k"
+    type: large_deductible
+    retention: {workers_comp: 250000, auto_liability: 250000, general_liability: 250000, property: 100000}
+  - id: cap_100
+    label: "Captive $100k"
+    type: captive
+    retention: {workers_comp: 100000, auto_liability: 100000, general_liability: 100000, property: 100000}
+  - id: cap_250
+    label: "Captive $250k"
+    type: captive
+    retention: {workers_comp: 250000, auto_liability: 250000, general_liability: 250000, property: 100000}
+  - id: cap_500
+    label: "Captive $500k + agg stop"
+    type: captive
+    retention: {workers_comp: 500000, auto_liability: 500000, general_liability: 500000, property: 250000}
+    aggregate_stop: {attach_multiple: 1.5, limit: 2000000, loss_ratio: 0.35, min_premium: 25000}
+  - id: cell_250
+    label: "Cell captive $250k"
+    type: captive
+    structure: cell
+    retention: {workers_comp: 250000, auto_liability: 250000, general_liability: 250000, property: 100000}
+
+# The captive program used for the domicile comparison, tornado, stress tests and capital analysis.
+focus_captive: cap_250
+
+# -----------------------------------------------------------------------------
+# Tornado: each driver is moved to its low and high value with everything else at
+# base; the metric is the PV saving of the focus captive vs guaranteed cost.
+# -----------------------------------------------------------------------------
+sensitivity:
+  - {path: adjustments.severity_multiplier, low: 0.8, high: 1.3, label: "Claim severity (x0.8 / x1.3)"}
+  - {path: adjustments.frequency_multiplier, low: 0.8, high: 1.3, label: "Claim frequency (x0.8 / x1.3)"}
+  - {path: lines.workers_comp.gc_loss_ratio, low: 0.48, high: 0.65, label: "WC guaranteed-cost loss ratio (48% / 65%)"}
+  - {path: program_costs.market_rate_multiplier, low: 0.9, high: 1.2, label: "Market rate level (-10% / +20%)"}
+  - {path: economics.discount_rate, low: 0.04, high: 0.10, label: "Discount rate (4% / 10% = WACC view)"}
+  - {path: economics.investment_yield, low: 0.025, high: 0.055, label: "Captive investment yield (2.5% / 5.5%)"}
+  - {path: program_costs.captive_annual_opex, low: 80000, high: 150000, label: "Captive operating cost ($80k / $150k)"}
+  - {path: program_costs.fronting_fee_rate, low: 0.04, high: 0.10, label: "Fronting fee (4% / 10%)"}
+  - {path: program_costs.fronting_fee_min, low: 25000, high: 150000, label: "Minimum fronting fee ($25k / $150k)"}
+  - {path: program_costs.claims_handling_rate, low: 0.07, high: 0.14, label: "Claims handling (7% / 14% of losses)"}
+  - {path: captive.risk_margin, low: 0.0, high: 0.2, label: "Captive premium risk margin (0% / 20%)"}
+  - {path: program_costs.collateral_factor, low: 1.0, high: 1.5, label: "Collateral factor (100% / 150%)"}
+
+# -----------------------------------------------------------------------------
+# Named scenarios (whole-world alternatives, all programs re-run)
+# -----------------------------------------------------------------------------
+scenarios:
+  base:
+    description: "Base assumptions"
+    overrides: {}
+  hard_market:
+    description: "Hard market: commercial rates +25% (GC and excess)"
+    overrides: {program_costs.market_rate_multiplier: 1.25}
+  soft_market:
+    description: "Soft market: commercial rates -10%"
+    overrides: {program_costs.market_rate_multiplier: 0.9}
+  adverse_losses:
+    description: "Loss pick too optimistic: frequency +20%, severity +20% (premiums priced on the old pick)"
+    overrides: {adjustments.frequency_multiplier: 1.2, adjustments.severity_multiplier: 1.2}
+    reprice: false
+  safety_program:
+    description: "Loss-control success: lost-time frequency -25% after captive formation (not credited by GC market)"
+    overrides: {lines.workers_comp.components.1.frequency.mean: 1.5}
+    reprice: false
+  no_tax_deduction:
+    description: "IRS treats captive as self-insurance (no risk distribution): deduct claims only when paid"
+    overrides: {captive.tax_mode: self_insurance}
+  wacc_view:
+    description: "Discount every cash flow at a 10% WACC instead of the 6% opportunity cost of cash"
+    overrides: {economics.discount_rate: 0.10}
+  elect_831b:
+    description: "Captive elects IRC 831(b): taxed on investment income only (eligibility and IRS-scrutiny flags reported)"
+    overrides: {captive.tax_mode: "831b"}
+  double_size:
+    description: "Company twice the size (exposure x2) - where does a captive start to make sense?"
+    overrides: {company.exposure_scale: 2.0}
+
+# Deterministic stress tests on the focus captive's capital (all re-use the same random paths)
+stress_tests:
+  base: {description: "Base", overrides: {}}
+  frequency_up_50: {description: "Frequency +50%", overrides: {adjustments.frequency_multiplier: 1.5}}
+  severity_up_30: {description: "Severity +30% (social inflation)", overrides: {adjustments.severity_multiplier: 1.3}}
+  combined: {description: "Frequency +30% and severity +30%", overrides: {adjustments.frequency_multiplier: 1.3, adjustments.severity_multiplier: 1.3}}
+  zero_yield: {description: "Investment yield 0%", overrides: {economics.investment_yield: 0.0}}
+
+breakeven:
+  scales: [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0]
+  sims: 20000
+
+# -----------------------------------------------------------------------------
+# Provenance. status: verified (official source), benchmark (public figure used to
+# anchor an assumption), secondary (vendor/association source), assumption.
+# -----------------------------------------------------------------------------
+sources:
+  _retrieved: "2026-10-10"
+  economics.investment_yield:
+    status: benchmark
+    value_basis: "5-year US Treasury par yield 5.02% and 3-year 4.89% on 10/09/2026; captive assumed to net ~4.5% after fees and a shorter, partly-cash portfolio"
+    url: "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value_month=202610"
+  economics.tax_rate_parent:
+    status: assumption
+    value_basis: "21% federal corporate rate (IRC 11(b)) plus ~4% blended state rate net of federal benefit"
+    url: "https://www.law.cornell.edu/uscode/text/26/11"
+  economics.tax_rate_captive:
+    status: benchmark
+    value_basis: "21% federal rate; NC (G.S. 105-228.4A) and Utah (31A-3-304) captives pay premium tax or a fee in lieu of state income tax"
+    url: "https://www.ncleg.gov/EnactedLegislation/Statutes/HTML/BySection/Chapter_105/GS_105-228.4A.html"
+  economics.discount_rate:
+    status: assumption
+    value_basis: "After-tax opportunity cost of cash (~8% pre-tax borrowing x (1 - 25%)); a 10% WACC is shown as a scenario"
+  economics.loc_fee_rate:
+    status: assumption
+    value_basis: "Bank LOC fee; no verifiable public figure found (one secondary snippet cited ~0.75%)"
+  economics.common_shock_cv:
+    status: assumption
+    value_basis: "Modest cross-line correlation; no public calibration"
+  lines.workers_comp.components.0.frequency.mean:
+    status: benchmark
+    value_basis: "BLS SOII 2024: NAICS 332 total recordable case rate 3.2 per 100 FTE (~6.7 cases/yr at 210 FTE); medical-only claims set to 6/yr"
+    url: "https://www.bls.gov/iif/nonfatal-injuries-and-illnesses-tables/table-1-injury-and-illness-rates-by-industry-2024-national.htm"
+  lines.workers_comp.components.1.frequency.mean:
+    status: benchmark
+    value_basis: "BLS SOII 2024: NAICS 332 days-away-from-work rate 0.9 per 100 FTE -> ~1.9 cases/yr at 210 FTE, rounded to 2.0 lost-time claims"
+    url: "https://www.bls.gov/iif/nonfatal-injuries-and-illnesses-tables/table-1-injury-and-illness-rates-by-industry-2024-national.htm"
+  lines.workers_comp.components.1.severity.mean:
+    status: benchmark
+    value_basis: "NCCI State of the Line 2026: average lost-time medical ~$30.6K + indemnity ~$31.3K per claim, AY2025p (read from chart labels)"
+    url: "https://www.ncci.com/Articles/Documents/AIS2026-SOTL-Presentation.pdf"
+  lines.workers_comp.severity_trend:
+    status: benchmark
+    value_basis: "NCCI: lost-time medical and indemnity severity each +4% in AY2025"
+    url: "https://www.ncci.com/Articles/Documents/AIS2026-SOTL-At-a-Glance.pdf"
+  lines.workers_comp.gc_loss_ratio:
+    status: benchmark
+    value_basis: "NCCI: private-carrier WC loss ratio 44.2% (CY2024) / 47.7% (CY2025p), LAE 13.4%, combined 86 / 91. 55% used so the model does not assume today's unusually profitable WC pricing persists"
+    url: "https://www.ncci.com/Articles/Documents/AIS2026-SOTL-Presentation.pdf"
+  lines.auto_liability.gc_loss_ratio:
+    status: benchmark
+    value_basis: "NCCI SOTL 2026 (NAIC data): commercial auto net combined ratio 107 (2024) / 102 (2025p), so loss ratios are high; the 68% itself is an assumption"
+    url: "https://www.ncci.com/Articles/Documents/AIS2026-SOTL-Presentation.pdf"
+  lines.general_liability.gc_loss_ratio:
+    status: benchmark
+    value_basis: "NCCI SOTL 2026 (NAIC data): other liability incl. products combined ratio 109 / 109; the 65% itself is an assumption"
+    url: "https://www.ncci.com/Articles/Documents/AIS2026-SOTL-Presentation.pdf"
+  lines.property.gc_loss_ratio:
+    status: benchmark
+    value_basis: "NCCI SOTL 2026 (NAIC data): fire & allied lines combined ratio 83 / 76; the 55% itself is an assumption"
+    url: "https://www.ncci.com/Articles/Documents/AIS2026-SOTL-Presentation.pdf"
+  company.payroll:
+    status: benchmark
+    value_basis: "Sanity check: implied WC guaranteed-cost rate ~$2.1 per $100 payroll vs Oregon DCBS 2024 national median index rate $1.09 (all industries); manufacturing classes run higher"
+    url: "https://www.oregon.gov/DCBS/DCBSPubs/reports/general/prem-rpt/24-2083.pdf"
+  program_costs.fronting_fee_rate:
+    status: secondary
+    value_basis: "Captive International (Feb 2024): fronting fees 3% to 10%+ of premium, subject to a minimum; captive.com: 6-10%"
+    url: "https://www.captiveinternational.com/analysis/the-veritas-about-fronting"
+  program_costs.fronting_fee_min:
+    status: assumption
+    value_basis: "Same source reports minimum fees 'around $250,000' for a single policy in today's market; $50k assumed for a small program and tested up to $150k"
+    url: "https://www.captiveinternational.com/analysis/the-veritas-about-fronting"
+  program_costs.collateral_factor:
+    status: secondary
+    value_basis: "captive.com: fronting carriers often require 125%-150% of the projected loss fund as collateral"
+    url: "https://www.captive.com/captives-101/what-is-a-fronting-arrangement-and-why-do-captive-insurers-use-them"
+  program_costs.captive_formation_cost:
+    status: secondary
+    value_basis: "CRI Advisors (2020): single-parent start-up costs 'typically start at around $80,000'; rounded up to $100k for inflation"
+    url: "https://www.criadv.com/insight/captive-insurance-company-right/"
+  program_costs.captive_annual_opex:
+    status: secondary
+    value_basis: "CRI Advisors (2020): ongoing management costs '$80,000 to $120,000+'"
+    url: "https://www.criadv.com/insight/captive-insurance-company-right/"
+  program_costs.claims_handling_rate:
+    status: benchmark
+    value_basis: "NCCI: WC LAE ratio 13.4% of premium (CY2025p); ~10% of losses assumed for a TPA on a retained program"
+    url: "https://www.ncci.com/Articles/Documents/AIS2026-SOTL-Presentation.pdf"
+  program_costs.cell_captive:
+    status: assumption
+    value_basis: "Rent-a-captive / protected cell pricing is negotiated; illustrative. Vermont sponsored-captive cells are not subject to the $7,500 minimum premium tax (8 V.S.A. 6014, verified)"
+    url: "https://legislature.vermont.gov/statutes/section/08/141/06014"
+  captive.max_premium_to_surplus:
+    status: assumption
+    value_basis: "Common regulator/rating-agency leverage guide; not a statutory limit in these domiciles"
+  captive.capital_var_level:
+    status: assumption
+    value_basis: "Capital set so the captive survives a 1-in-100 year-1 retained loss beyond the funded loss pick"
+  tax_rules.section_831b_premium_limit:
+    status: verified
+    value_basis: "Rev. Proc. 2025-32 s.3.36: $2,900,000 for taxable years beginning in 2026 ($2,850,000 for 2025 per Rev. Proc. 2024-40)"
+    url: "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf"
+  tax_rules.micro_captive_loss_ratio_flag:
+    status: verified
+    value_basis: "T.D. 10029 (90 FR 3534, 14 Jan 2025): transaction of interest if loss ratio < 60% over up to 10 years AND the financing factor; listed transaction < 30%. A secondary source reports S.D. Tex. vacated the listed-transaction rule on 16 Apr 2026 (unverified)"
+    url: "https://www.federalregister.gov/documents/2025/01/14/2025-00393/micro-captive-listed-transactions-and-micro-captive-transactions-of-interest"
+  domiciles.vermont.min_capital:
+    status: verified
+    value_basis: "8 V.S.A. 6004: pure captive 'not less than $250,000.00'"
+    url: "https://legislature.vermont.gov/statutes/section/08/141/06004"
+  domiciles.vermont.premium_tax:
+    status: verified
+    value_basis: "8 V.S.A. 6014: assumed reinsurance 0.214% / 0.143% / 0.048% / 0.024% by $20M band; direct 0.38% / 0.285% / 0.19% / 0.072%; aggregate annual minimum $7,500, maximum $200,000"
+    url: "https://legislature.vermont.gov/statutes/section/08/141/06014"
+  domiciles.vermont.application_fee:
+    status: verified
+    value_basis: "8 V.S.A. 6002: $500 nonrefundable application fee; DFR fee chart (revised 7/2019): actuarial application review $6,000"
+    url: "https://dfr.vermont.gov/sites/finreg/files/doc_library/fees-&-premium-tax-chart.pdf"
+  domiciles.vermont.annual_license_fee:
+    status: verified
+    value_basis: "8 V.S.A. 6002: license renewal fee of $500.00 for each year"
+    url: "https://legislature.vermont.gov/statutes/section/08/141/06002"
+  domiciles.vermont.annual_travel_cost:
+    status: assumption
+    value_basis: "8 V.S.A. 6002(b) (verified) requires one board meeting a year in Vermont; the travel cost is an assumption"
+    url: "https://legislature.vermont.gov/statutes/section/08/141/06002"
+  domiciles.north_carolina.min_capital:
+    status: verified
+    value_basis: "G.S. 58-10-370: pure captive not less than $250,000"
+    url: "https://www.ncleg.gov/EnactedLegislation/Statutes/HTML/BySection/Chapter_58/GS_58-10-370.html"
+  domiciles.north_carolina.premium_tax:
+    status: verified
+    value_basis: "G.S. 105-228.4A: assumed reinsurance 0.225% / 0.150% / 0.050% / 0.025%; direct 0.4% / 0.3%; aggregate minimum $5,000, maximum $100,000"
+    url: "https://www.ncleg.gov/EnactedLegislation/Statutes/HTML/BySection/Chapter_105/GS_105-228.4A.html"
+  domiciles.north_carolina.application_fee:
+    status: verified
+    value_basis: "NCDOI 'Why NC' page: no NCDOI fees except the special purpose financial captive application fee (regulator web page, not statute)"
+    url: "https://www.ncdoi.gov/insurance-industry/captive-insurance/why-nc"
+  domiciles.north_carolina.annual_travel_cost:
+    status: assumption
+    value_basis: "G.S. 58-10-345(b) (verified) waives the in-state board meeting if two NC service providers are used; travel cost is an assumption"
+    url: "https://www.ncleg.gov/EnactedLegislation/Statutes/HTML/BySection/Chapter_58/GS_58-10-345.html"
+  domiciles.utah.min_capital:
+    status: verified
+    value_basis: "Utah Code 31A-37-204: pure captive not less than $250,000 (alternative: greater of 20% of aggregate risk or $50,000 if not a pool)"
+    url: "https://le.utah.gov/xcode/Title31a/Chapter37/C31A-37_1800010118000101.pdf"
+  domiciles.utah.annual_license_fee:
+    status: verified
+    value_basis: "Utah Insurance Dept.: 'Annual license fee of $7,500 (includes $250 e-commerce fee)'; 'In lieu of State premium taxes, a flat annual fee is charged'; application submission fee $200"
+    url: "https://insurance.utah.gov/captive/benefits/"
+  domiciles.bermuda.min_capital:
+    status: verified
+    value_basis: "Insurance Act 1978 s.7: minimum share capital $120,000 for Class 1; solvency margin Figure A $120,000 (Figure B, 20% of net premiums, is lower here)"
+    url: "https://cdn.bma.bm/documents/2023-11-14-13-37-59-Insurance-Act-1978.pdf"
+  domiciles.bermuda.application_fee:
+    status: verified
+    value_basis: "BMA fees effective 1 Jan 2025: application $800 + Class 1 registration $2,250; annual fee $2,250 (2026 schedule not located)"
+    url: "https://cdn.bma.bm/documents/2025-01-13-09-37-05-2025-Bermuda-Monetary-Authority-Fees.pdf"
+  domiciles.bermuda.premium_tax:
+    status: secondary
+    value_basis: "No Bermuda premium or income tax for exempted companies (law-firm sources); the Corporate Income Tax Act 2023 applies only to MNE groups with >= EUR 750M revenue (threshold verified in the Act)"
+    url: "https://www.bermudalaws.bm/Laws/Annual%20Law/Acts/2023/Corporate%20Income%20Tax%20Act%202023"
+  domiciles.bermuda.federal_excise_tax_rate:
+    status: verified
+    value_basis: "IRC 4371: 4% of casualty premiums and 1% of reinsurance premiums paid to foreign insurers. An IRC 953(d) electing company 'shall be treated as a domestic corporation', so FET is assumed not to apply (interpretation - confirm with tax counsel)"
+    url: "https://www.law.cornell.edu/uscode/text/26/4371"
+  domiciles.bermuda.annual_operating_cost_adjustment:
+    status: assumption
+    value_basis: "Offshore manager premium plus 953(d) compliance; no public source"
+  domiciles.cayman.min_capital:
+    status: verified
+    value_basis: "CIMA Insurance (Capital and Solvency) Regulations, Schedule 1: Class B(i) general business MCR US$100,000"
+    url: "https://www.cima.ky/upimages/lawsregulations/InsuranceCapitalandSolvencyClassesB,CandDInsurersRegulations2018Revision_1524078111_1599480669.PDF"
+  domiciles.cayman.annual_license_fee:
+    status: verified
+    value_basis: "CIMA fee schedule updated 1 Jan 2026: Class B(i) application CI$1,000 (US$1,219.51); annual fee CI$10,450 (US$12,743.90)"
+    url: "https://www.cima.ky/upimages/commonfiles/WebsiteFeeSchedule1January2026Update_1770328410.pdf"
+  domiciles.cayman.premium_tax:
+    status: secondary
+    value_basis: "No premium tax found in the Insurance Law 2010; CIMA FAQ: 'No income, capital gains or corporation taxes are payable in the Cayman Islands.'"
+    url: "https://www.cima.ky/insurance-faqs"
+  benchmarks.single_parent_min_premium:
+    status: secondary
+    value_basis: "IML (Bermuda captive manager): minimum ~USD 1 million annual premium; CRI Advisors (2020): at least $1.5 million for a single-parent captive"
+    url: "https://iml.bm/knowledge_base/single-parent-vs-group-captive-insurance/"
+  benchmarks.vermont_captive_count:
+    status: verified
+    value_basis: "Vermont ACCD, 21 Jan 2026: 707 active captives; 51 new captives licensed in 2025"
+    url: "https://accd.vermont.gov/press-releases/vermont-demonstrates-continued-leadership-captive-insurance"
+  irc_953d:
+    status: verified
+    value_basis: "IRC 953(d): an electing foreign insurance company that is a CFC and would qualify under subchapter L 'shall be treated as a domestic corporation'"
+    url: "https://www.law.cornell.edu/uscode/text/26/953"
+  rev_rul_2002_89_90:
+    status: secondary
+    value_basis: "Rev. Rul. 2002-89 (parent <50% of captive premiums and risks = insurance) and 2002-90 (12 subsidiaries, each 5%-15% of risk = insurance); host copies of IRS text"
+    url: "https://captiveplanning.com/files/docs/rev-rulings/IRS_Rev.Rul_2002-90.pdf"

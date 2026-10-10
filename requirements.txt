@@ -1,0 +1,11 @@
+# Runtime (pinned; tested on Python 3.12)
+numpy==2.5.3
+scipy==1.18.1
+pandas==3.0.6
+openpyxl==3.1.5
+matplotlib==3.11.2
+PyYAML==6.0.3
+reportlab==5.0.1
+# Dev
+pytest==9.1.1
+ruff==0.17.0

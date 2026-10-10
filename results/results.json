@@ -1,0 +1,1592 @@
+{
+ "meta": {
+  "model_version": "1.0.0",
+  "seed": 20261010,
+  "n_sims": 50000,
+  "horizon_years": 5,
+  "company": {
+   "name": "HypoMfg, Inc. (hypothetical)",
+   "description": "Hypothetical US middle-market metal-products manufacturer",
+   "revenue": 50000000,
+   "employees": 210,
+   "payroll": 11500000,
+   "fleet_power_units": 25,
+   "property_tiv": 40000000,
+   "hq_state": "Georgia (hypothetical)",
+   "exposure_scale": 1.0
+  },
+  "focus_captive": "cap_250",
+  "base_domicile": "vermont",
+  "discount_rate": 0.06,
+  "runtime_seconds": 92.6
+ },
+ "losses": {
+  "lines": [
+   {
+    "line": "workers_comp",
+    "label": "Workers' compensation",
+    "expected_claims_yr1": 8.0,
+    "simulated_claims_yr1": 7.9974,
+    "expected_loss_yr1_analytic": 127764.51519495972,
+    "simulated_loss_yr1_mean": 128128.31872211213,
+    "simulated_loss_yr1_std": 185853.9412789424,
+    "simulated_loss_yr1_p99": 1007907.7997589757,
+    "gc_premium_yr1": 232299.1185362904,
+    "limit": 1000000,
+    "components": [
+     {
+      "name": "medical_only",
+      "frequency": {
+       "dist": "negbin",
+       "mean": 6.0,
+       "vmr": 1.3
+      },
+      "severity": {
+       "dist": "lognormal",
+       "mean": 1500,
+       "cv": 1.5
+      }
+     },
+     {
+      "name": "lost_time",
+      "frequency": {
+       "dist": "negbin",
+       "mean": 2.0,
+       "vmr": 1.3
+      },
+      "severity": {
+       "dist": "lognormal",
+       "mean": 62000,
+       "cv": 2.5
+      }
+     }
+    ]
+   },
+   {
+    "line": "auto_liability",
+    "label": "Commercial auto liability",
+    "expected_claims_yr1": 3.06,
+    "simulated_claims_yr1": 3.03498,
+    "expected_loss_yr1_analytic": 55172.89070681667,
+    "simulated_loss_yr1_mean": 54540.96002272953,
+    "simulated_loss_yr1_std": 106734.96715394204,
+    "simulated_loss_yr1_p99": 551299.1719484052,
+    "gc_premium_yr1": 81136.60398061275,
+    "limit": 1000000,
+    "components": [
+     {
+      "name": "attritional",
+      "frequency": {
+       "dist": "negbin",
+       "mean": 3.0,
+       "vmr": 1.2
+      },
+      "severity": {
+       "dist": "lognormal",
+       "mean": 12000,
+       "cv": 2.0
+      }
+     },
+     {
+      "name": "large",
+      "frequency": {
+       "dist": "poisson",
+       "mean": 0.06
+      },
+      "severity": {
+       "dist": "pareto",
+       "xm": 150000,
+       "alpha": 1.6
+      }
+     }
+    ]
+   },
+   {
+    "line": "general_liability",
+    "label": "General & products liability",
+    "expected_claims_yr1": 1.54,
+    "simulated_claims_yr1": 1.54428,
+    "expected_loss_yr1_analytic": 41287.96838962307,
+    "simulated_loss_yr1_mean": 41048.68616868033,
+    "simulated_loss_yr1_std": 115190.53131618163,
+    "simulated_loss_yr1_p99": 618701.0527216528,
+    "gc_premium_yr1": 63519.95136865087,
+    "limit": 1000000,
+    "components": [
+     {
+      "name": "attritional",
+      "frequency": {
+       "dist": "negbin",
+       "mean": 1.5,
+       "vmr": 1.3
+      },
+      "severity": {
+       "dist": "lognormal",
+       "mean": 15000,
+       "cv": 2.5
+      }
+     },
+     {
+      "name": "large",
+      "frequency": {
+       "dist": "poisson",
+       "mean": 0.04
+      },
+      "severity": {
+       "dist": "pareto",
+       "xm": 250000,
+       "alpha": 1.7
+      }
+     }
+    ]
+   },
+   {
+    "line": "property",
+    "label": "Property (non-catastrophe)",
+    "expected_claims_yr1": 1.03,
+    "simulated_claims_yr1": 1.03506,
+    "expected_loss_yr1_analytic": 60513.133266160134,
+    "simulated_loss_yr1_mean": 62105.9825850667,
+    "simulated_loss_yr1_std": 277972.7082453083,
+    "simulated_loss_yr1_p99": 1139503.63549395,
+    "gc_premium_yr1": 110023.8786657457,
+    "limit": 5000000,
+    "components": [
+     {
+      "name": "attritional",
+      "frequency": {
+       "dist": "negbin",
+       "mean": 1.0,
+       "vmr": 1.2
+      },
+      "severity": {
+       "dist": "lognormal",
+       "mean": 25000,
+       "cv": 1.5
+      }
+     },
+     {
+      "name": "large",
+      "frequency": {
+       "dist": "poisson",
+       "mean": 0.03
+      },
+      "severity": {
+       "dist": "pareto",
+       "xm": 500000,
+       "alpha": 1.5
+      }
+     }
+    ]
+   }
+  ],
+  "total_yr1": {
+   "mean": 285823.94749858865,
+   "std": 370483.86964865186,
+   "p50": 173818.36956693174,
+   "p90": 638156.5128436956,
+   "p95": 933572.091585552,
+   "p99": 1575901.4651999685,
+   "p99.5": 2127948.4581798534
+  },
+  "n_claims_simulated": 3405878
+ },
+ "programs": [
+  {
+   "id": "gc",
+   "label": "Guaranteed cost",
+   "type": "guaranteed_cost",
+   "mean": 1793814.4587571186,
+   "std": 4.656612873077393e-10,
+   "p5": 1793814.458757119,
+   "p25": 1793814.458757119,
+   "p50": 1793814.458757119,
+   "p75": 1793814.458757119,
+   "p90": 1793814.458757119,
+   "p95": 1793814.458757119,
+   "p99": 1793814.458757119,
+   "saving_vs_gc_mean": 0.0,
+   "prob_cheaper_than_gc": 0.0,
+   "components": {
+    "Insurance premium (GC / excess)": 2347460.896645118,
+    "Fronting & program fees": 0.0,
+    "Retained losses & claims handling": 0.0,
+    "Captive operating, domicile & premium tax": 0.0,
+    "Collateral (LOC) fees": 0.0,
+    "Formation costs": 0.0,
+    "Income tax (net of deductions)": -553646.4378879999,
+    "Investment income": 0.0,
+    "Capital & float opportunity cost": 0.0
+   },
+   "expected_cashflows": [
+    486979.5525512705,
+    385026.406563146,
+    400663.3933070401,
+    416922.98979179154,
+    433826.38800811174,
+    -142754.22475433326,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "year1_premium_outlay": 486979.5525512997,
+   "expected_retained_by_year": [
+    0.0
+   ],
+   "saving_vs_ld_mean": -390136.13416675566,
+   "prob_cheaper_than_ld": 0.06478
+  },
+  {
+   "id": "ld_250",
+   "label": "Large deductible $250k",
+   "type": "large_deductible",
+   "mean": 1403678.324590363,
+   "std": 241121.42750763247,
+   "p5": 1047187.6444227224,
+   "p25": 1229659.6005584726,
+   "p50": 1382451.483282547,
+   "p75": 1554225.6843075994,
+   "p90": 1723309.1145456096,
+   "p95": 1831740.7827230766,
+   "p99": 2059229.7976739134,
+   "saving_vs_gc_mean": 390136.13416675566,
+   "prob_cheaper_than_gc": 0.93522,
+   "components": {
+    "Insurance premium (GC / excess)": 774857.1122267699,
+    "Fronting & program fees": 71269.60411730791,
+    "Retained losses & claims handling": 958611.9696026122,
+    "Captive operating, domicile & premium tax": 0.0,
+    "Collateral (LOC) fees": 32173.68944316835,
+    "Formation costs": 0.0,
+    "Income tax (net of deductions)": -433234.0507994948,
+    "Investment income": 0.0,
+    "Capital & float opportunity cost": 0.0
+   },
+   "expected_cashflows": [
+    174373.96807098397,
+    215577.0689908456,
+    268845.8370785827,
+    301898.3241435144,
+    329610.5740741212,
+    127540.50416884264,
+    105890.85938680805,
+    62980.46506841321,
+    44957.21161323853,
+    28408.97794780732,
+    17829.30864658771,
+    8436.231852645322,
+    3413.1014330651437,
+    -1839.4089854822314
+   ],
+   "year1_premium_outlay": 156779.61729097704,
+   "expected_retained_by_year": [
+    213264.85793952752,
+    220856.70999460324,
+    228696.28536536245,
+    236786.97240077125,
+    245131.57741600755
+   ],
+   "saving_vs_ld_mean": 0.0,
+   "prob_cheaper_than_ld": 0.0
+  },
+  {
+   "id": "cap_100",
+   "label": "Captive $100k",
+   "type": "captive",
+   "mean": 2387528.3531556246,
+   "std": 160292.4042388216,
+   "p5": 2144418.893886512,
+   "p25": 2274801.1344928993,
+   "p50": 2375271.9858388104,
+   "p75": 2488726.104404242,
+   "p90": 2598674.764213907,
+   "p95": 2669015.0717292135,
+   "p99": 2813303.504039965,
+   "saving_vs_gc_mean": -593713.8943985056,
+   "prob_cheaper_than_gc": 0.0,
+   "components": {
+    "Insurance premium (GC / excess)": 1203538.8292722797,
+    "Fronting & program fees": 223255.28063498283,
+    "Retained losses & claims handling": 771136.217288804,
+    "Captive operating, domicile & premium tax": 698775.8766414252,
+    "Collateral (LOC) fees": 0.00707541036481674,
+    "Formation costs": 106500.0,
+    "Income tax (net of deductions)": -689472.9204813932,
+    "Investment income": -221385.18817234528,
+    "Capital & float opportunity cost": 295180.2508964608
+   },
+   "expected_cashflows": [
+    1047523.6411286647,
+    471505.1661120648,
+    512464.23773265036,
+    527204.8544715691,
+    543131.4764892875,
+    -465106.54729429184,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    -183880.86225801348
+   ],
+   "year1_premium_outlay": 625157.1600677099,
+   "expected_retained_by_year": [
+    172154.2667269852,
+    177651.15982450056,
+    183313.43751004187,
+    189143.7774939788,
+    195144.67360720396
+   ],
+   "saving_vs_ld_mean": -983850.0285652613,
+   "prob_cheaper_than_ld": 0.0,
+   "captive": {
+    "domicile": "vermont",
+    "structure": "single_parent",
+    "tax_mode": "insurance",
+    "capital": 315866.48106143135,
+    "capital_basis": {
+     "domicile_minimum": 250000.0,
+     "var_based": 315866.48106143135,
+     "premium_to_surplus": 110768.88757988403
+    },
+    "premium_by_year": [
+     332306.6627396521,
+     338957.9033876457,
+     345809.2593871507,
+     352863.9707677144,
+     360125.05506471684
+    ],
+    "premium_tax_by_year": [
+     7500.0,
+     7500.0,
+     7500.0,
+     7500.0,
+     7500.0
+    ],
+    "fronting_fee_by_year": [
+     50000.0,
+     50000.0,
+     50000.0,
+     50000.0,
+     50000.0
+    ],
+    "opex_annual": 116500.0,
+    "formation": 106500.0,
+    "expected_loss_ratio": 0.5833013788449043,
+    "flags": {
+     "premium_within_831b_limit": true,
+     "loss_ratio_below_micro_captive_tolerance": true
+    },
+    "prob_capital_call": 0.28674
+   }
+  },
+  {
+   "id": "cap_250",
+   "label": "Captive $250k",
+   "type": "captive",
+   "mean": 2232076.872200597,
+   "std": 240705.31261296305,
+   "p5": 1877262.1786895008,
+   "p25": 2058920.5839219491,
+   "p50": 2210165.7894860073,
+   "p75": 2380423.1813557167,
+   "p90": 2550794.6700339927,
+   "p95": 2660421.201666294,
+   "p99": 2890560.9812178104,
+   "saving_vs_gc_mean": -438262.4134434781,
+   "prob_cheaper_than_gc": 0.01428,
+   "components": {
+    "Insurance premium (GC / excess)": 774857.1122267699,
+    "Fronting & program fees": 223255.28063498283,
+    "Retained losses & claims handling": 958611.9696026122,
+    "Captive operating, domicile & premium tax": 698775.8766414252,
+    "Collateral (LOC) fees": 6.336607078560603,
+    "Formation costs": 106500.0,
+    "Income tax (net of deductions)": -626900.8372151883,
+    "Investment income": -290913.4011087488,
+    "Capital & float opportunity cost": 387884.5348116655
+   },
+   "expected_cashflows": [
+    1210553.8510055558,
+    434954.79056428897,
+    477766.8102607818,
+    492802.5541099815,
+    508064.33029349474,
+    -721388.7426172942,
+    -0.35648562121892413,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    -194436.9421202408
+   ],
+   "year1_premium_outlay": 588830.0953978053,
+   "expected_retained_by_year": [
+    213264.85793952752,
+    220856.70999460324,
+    228696.28536536245,
+    236786.97240077125,
+    245131.57741600755
+   ],
+   "saving_vs_ld_mean": -828398.5476102338,
+   "prob_cheaper_than_ld": 0.0,
+   "captive": {
+    "domicile": "vermont",
+    "structure": "single_parent",
+    "tax_mode": "insurance",
+    "capital": 515223.755607809,
+    "capital_basis": {
+     "domicile_minimum": 250000.0,
+     "var_based": 515223.755607809,
+     "premium_to_surplus": 127350.15936894278
+    },
+    "premium_by_year": [
+     382050.47810682835,
+     391236.6190934699,
+     400722.5052920886,
+     410512.2366049332,
+     420609.2086733692
+    ],
+    "premium_tax_by_year": [
+     7500.0,
+     7500.0,
+     7500.0,
+     7500.0,
+     7500.0
+    ],
+    "fronting_fee_by_year": [
+     50000.0,
+     50000.0,
+     50000.0,
+     50000.0,
+     50000.0
+    ],
+    "opex_annual": 116500.0,
+    "formation": 106500.0,
+    "expected_loss_ratio": 0.627993888393426,
+    "flags": {
+     "premium_within_831b_limit": true,
+     "loss_ratio_below_micro_captive_tolerance": false
+    },
+    "prob_capital_call": 0.1259
+   }
+  },
+  {
+   "id": "cap_500",
+   "label": "Captive $500k + agg stop",
+   "type": "captive",
+   "mean": 2429060.7157048685,
+   "std": 189400.14001562513,
+   "p5": 2122261.3867310807,
+   "p25": 2295307.864418716,
+   "p50": 2425139.2971810373,
+   "p75": 2559540.028963209,
+   "p90": 2676725.594600219,
+   "p95": 2747955.066473062,
+   "p99": 2872825.023404863,
+   "saving_vs_gc_mean": -635246.2569477495,
+   "prob_cheaper_than_gc": 0.0,
+   "components": {
+    "Insurance premium (GC / excess)": 520154.8059035391,
+    "Fronting & program fees": 223255.28063498283,
+    "Retained losses & claims handling": 901730.4328608237,
+    "Captive operating, domicile & premium tax": 1305440.3543956955,
+    "Collateral (LOC) fees": 0.008006704154607061,
+    "Formation costs": 106500.0,
+    "Income tax (net of deductions)": -705692.2851716138,
+    "Investment income": -233016.35722420798,
+    "Capital & float opportunity cost": 310688.4762989445
+   },
+   "expected_cashflows": [
+    1008008.2172012354,
+    511486.0057583329,
+    534035.2378138974,
+    543276.9089901559,
+    554151.9138941639,
+    -457939.4072242124,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    -191233.98222221664
+   ],
+   "year1_premium_outlay": 651508.2172013265,
+   "expected_retained_by_year": [
+    197675.67327218174,
+    205601.13827874543,
+    214608.0991355246,
+    223583.54508179083,
+    233244.8617859985
+   ],
+   "saving_vs_ld_mean": -1025382.391114505,
+   "prob_cheaper_than_ld": 0.0,
+   "captive": {
+    "domicile": "vermont",
+    "structure": "single_parent",
+    "tax_mode": "insurance",
+    "capital": 250000.0,
+    "capital_basis": {
+     "domicile_minimum": 250000.0,
+     "var_based": 161231.2967967059,
+     "premium_to_surplus": 163921.97353403448
+    },
+    "premium_by_year": [
+     491765.92060210346,
+     506219.56547367503,
+     519893.7982662422,
+     534641.9270030987,
+     549300.4846695331
+    ],
+    "premium_tax_by_year": [
+     7500.0,
+     7500.0,
+     7500.0,
+     7500.0,
+     7500.0
+    ],
+    "fronting_fee_by_year": [
+     50000.0,
+     50000.0,
+     50000.0,
+     50000.0,
+     50000.0
+    ],
+    "opex_annual": 116500.0,
+    "formation": 106500.0,
+    "expected_loss_ratio": 0.45436804955561705,
+    "flags": {
+     "premium_within_831b_limit": true,
+     "loss_ratio_below_micro_captive_tolerance": true
+    },
+    "prob_capital_call": 0.54058
+   }
+  },
+  {
+   "id": "cell_250",
+   "label": "Cell captive $250k",
+   "type": "captive",
+   "mean": 1899893.9917666144,
+   "std": 240065.66327908557,
+   "p5": 1545422.0950416625,
+   "p25": 1727102.9868208293,
+   "p50": 1878376.4869965212,
+   "p75": 2048446.670406709,
+   "p90": 2217894.6712942068,
+   "p95": 2326117.8515292876,
+   "p99": 2553684.289822587,
+   "saving_vs_gc_mean": -106079.53300949543,
+   "prob_cheaper_than_gc": 0.35662,
+   "components": {
+    "Insurance premium (GC / excess)": 774857.1122267699,
+    "Fronting & program fees": 223255.28063498283,
+    "Retained losses & claims handling": 958611.9696026122,
+    "Captive operating, domicile & premium tax": 369490.78734634264,
+    "Collateral (LOC) fees": 263.35251194257995,
+    "Formation costs": 25000.0,
+    "Income tax (net of deductions)": -538301.5678326153,
+    "Investment income": -260151.17182973874,
+    "Capital & float opportunity cost": 346868.2291063186
+   },
+   "expected_cashflows": [
+    1065734.479028641,
+    405369.4752799443,
+    427196.5788250703,
+    442706.29925220605,
+    458626.82381060335,
+    -853519.8289861211,
+    -40.93476379684886,
+    -3.1614735319276854,
+    -0.00010389721317858784,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    -54640.233089336536
+   ],
+   "year1_premium_outlay": 525510.7234209541,
+   "expected_retained_by_year": [
+    213264.85793952752,
+    220856.70999460324,
+    228696.28536536245,
+    236786.97240077125,
+    245131.57741600755
+   ],
+   "saving_vs_ld_mean": -496215.66717625124,
+   "prob_cheaper_than_ld": 0.0,
+   "captive": {
+    "domicile": "vermont",
+    "structure": "cell",
+    "tax_mode": "insurance",
+    "capital": 515223.755607809,
+    "capital_basis": {
+     "domicile_minimum": 100000.0,
+     "var_based": 515223.755607809,
+     "premium_to_surplus": 106243.70204332565
+    },
+    "premium_by_year": [
+     318731.106129977,
+     327936.90545832994,
+     337443.09145341365,
+     347253.7727912678,
+     357372.3523799302
+    ],
+    "premium_tax_by_year": [
+     680.6280231486127,
+     700.2863648600256,
+     720.5861613250696,
+     741.5361863345571,
+     763.14370656101
+    ],
+    "fronting_fee_by_year": [
+     50000.0,
+     50000.0,
+     50000.0,
+     50000.0,
+     50000.0
+    ],
+    "opex_annual": 60000.0,
+    "formation": 25000.0,
+    "expected_loss_ratio": 0.7456518529886619,
+    "flags": {
+     "premium_within_831b_limit": true,
+     "loss_ratio_below_micro_captive_tolerance": false
+    },
+    "prob_capital_call": 0.0524
+   }
+  }
+ ],
+ "capital": {
+  "capital": 515223.755607809,
+  "capital_basis": {
+   "domicile_minimum": 250000.0,
+   "var_based": 515223.755607809,
+   "premium_to_surplus": 127350.15936894278
+  },
+  "min_capital": 250000.0,
+  "annual_retained": {
+   "mean": 212779.42436501343,
+   "std": 157475.24046912452,
+   "p90": 428716.81529413565,
+   "p95": 522625.2432096922,
+   "p99_1_in_100": 702976.5761042157,
+   "p995_1_in_200": 784141.2953084523,
+   "tvar99": 810140.587933734
+  },
+  "five_year_retained": {
+   "mean": 1143577.260895238,
+   "p99_1_in_100": 2148105.7222939306,
+   "p995_1_in_200": 2267166.647020917
+  },
+  "surplus_end_year": {
+   "year_1": {
+    "p0.5": 65154.746697713344,
+    "p1": 135686.88768619596,
+    "p5": 292412.19597153587,
+    "p50": 598384.7435233386,
+    "p95": 716881.4264077836
+   },
+   "year_2": {
+    "p0.5": 13519.371270182284,
+    "p1": 81012.50877393849,
+    "p5": 270976.2987310959,
+    "p50": 645616.2020650913,
+    "p95": 877000.1525713414
+   },
+   "year_3": {
+    "p0.5": 10468.948334726412,
+    "p1": 84530.58487653652,
+    "p5": 280386.40824660077,
+    "p50": 706524.2886894052,
+    "p95": 1022917.4731980292
+   },
+   "year_4": {
+    "p0.5": 5343.926369728834,
+    "p1": 97271.80481944741,
+    "p5": 298872.7633181092,
+    "p50": 774031.7415336694,
+    "p95": 1164632.79057799
+   },
+   "year_5": {
+    "p0.5": 20050.098301317503,
+    "p1": 93658.92621947252,
+    "p5": 300824.7786903686,
+    "p50": 819036.8214136962,
+    "p95": 1275740.5874399713
+   }
+  },
+  "surplus_percentile_paths": {
+   "0.5": [
+    515223.755607809,
+    65154.746697713344,
+    13519.371270182284,
+    10468.948334726412,
+    5343.926369728834,
+    20050.098301317503
+   ],
+   "1": [
+    515223.755607809,
+    135686.88768619596,
+    81012.50877393849,
+    84530.58487653652,
+    97271.80481944741,
+    93658.92621947252
+   ],
+   "5": [
+    515223.755607809,
+    292412.19597153587,
+    270976.2987310959,
+    280386.40824660077,
+    298872.7633181092,
+    300824.7786903686
+   ],
+   "25": [
+    515223.755607809,
+    484191.7448834049,
+    500786.7862909001,
+    532709.6108171558,
+    575611.217090946,
+    597339.2246946003
+   ],
+   "50": [
+    515223.755607809,
+    598384.7435233386,
+    645616.2020650913,
+    706524.2886894052,
+    774031.7415336694,
+    819036.8214136962
+   ],
+   "75": [
+    515223.755607809,
+    666598.7056128541,
+    765876.2008548095,
+    858366.6436585672,
+    953945.7714461454,
+    1025276.4286218721
+   ],
+   "95": [
+    515223.755607809,
+    716881.4264077836,
+    877000.1525713414,
+    1022917.4731980292,
+    1164632.79057799,
+    1275740.5874399713
+   ]
+  },
+  "prob_surplus_below_min_any_year": 0.1259,
+  "prob_surplus_negative_any_year": 0.01936,
+  "prob_capital_call": 0.1259,
+  "capital_call_mean_if_called": 165625.20041989908,
+  "capital_call_1_in_100": 413139.4602135054,
+  "capital_call_1_in_200": 508692.77413761354,
+  "premium_to_surplus_yr1": 0.7415234137566575
+ },
+ "incremental": {
+  "vs_gc_flows": [
+   -723574.2984542854,
+   -49928.384001142986,
+   -77103.41695374169,
+   -75879.56431818998,
+   -74237.942285383,
+   578634.5178629609,
+   0.35648562121892413,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   194436.9421202408
+  ],
+  "vs_gc_npv": -438262.4134441846,
+  "vs_gc_irr": -0.03892630643835032,
+  "vs_ld_flows": [
+   -1036179.8829345718,
+   -219377.72157344336,
+   -208920.97318219906,
+   -190904.22996646713,
+   -178453.75621937355,
+   848929.2467861369,
+   105891.21587242927,
+   62980.46506841321,
+   44957.21161323853,
+   28408.97794780732,
+   17829.30864658771,
+   8436.231852645322,
+   3413.1014330651437,
+   192597.53313475856
+  ],
+  "vs_ld_npv": -828398.5476107203,
+  "vs_ld_irr": -0.055798286448875245
+ },
+ "domiciles": [
+  {
+   "id": "north_carolina",
+   "name": "North Carolina",
+   "onshore": true,
+   "min_capital": 250000,
+   "capital_held": 515223.755607809,
+   "application_fee": 0,
+   "annual_license_fee": 0,
+   "premium_tax_yr1": 5000.0,
+   "premium_tax_5yr": 25000.0,
+   "other_annual_costs": 2000,
+   "board_meeting": "Annual board meeting in NC, waived if two NC-based service providers are used (G.S. 58-10-345(b))",
+   "pv_cost_mean": 2197769.429675023,
+   "saving_vs_gc_mean": -403954.97091790434,
+   "sources": {
+    "min_capital": {
+     "status": "verified",
+     "value_basis": "G.S. 58-10-370: pure captive not less than $250,000",
+     "url": "https://www.ncleg.gov/EnactedLegislation/Statutes/HTML/BySection/Chapter_58/GS_58-10-370.html"
+    },
+    "premium_tax": {
+     "status": "verified",
+     "value_basis": "G.S. 105-228.4A: assumed reinsurance 0.225% / 0.150% / 0.050% / 0.025%; direct 0.4% / 0.3%; aggregate minimum $5,000, maximum $100,000",
+     "url": "https://www.ncleg.gov/EnactedLegislation/Statutes/HTML/BySection/Chapter_105/GS_105-228.4A.html"
+    },
+    "application_fee": {
+     "status": "verified",
+     "value_basis": "NCDOI 'Why NC' page: no NCDOI fees except the special purpose financial captive application fee (regulator web page, not statute)",
+     "url": "https://www.ncdoi.gov/insurance-industry/captive-insurance/why-nc"
+    },
+    "annual_travel_cost": {
+     "status": "assumption",
+     "value_basis": "G.S. 58-10-345(b) (verified) waives the in-state board meeting if two NC service providers are used; travel cost is an assumption",
+     "url": "https://www.ncleg.gov/EnactedLegislation/Statutes/HTML/BySection/Chapter_58/GS_58-10-345.html"
+    }
+   }
+  },
+  {
+   "id": "vermont",
+   "name": "Vermont",
+   "onshore": true,
+   "min_capital": 250000,
+   "capital_held": 515223.755607809,
+   "application_fee": 6500,
+   "annual_license_fee": 500,
+   "premium_tax_yr1": 7500.0,
+   "premium_tax_5yr": 37500.0,
+   "other_annual_costs": 6000,
+   "board_meeting": "At least one board meeting each year in Vermont (8 V.S.A. 6002(b))",
+   "pv_cost_mean": 2232076.872200597,
+   "saving_vs_gc_mean": -438262.4134434781,
+   "sources": {
+    "min_capital": {
+     "status": "verified",
+     "value_basis": "8 V.S.A. 6004: pure captive 'not less than $250,000.00'",
+     "url": "https://legislature.vermont.gov/statutes/section/08/141/06004"
+    },
+    "premium_tax": {
+     "status": "verified",
+     "value_basis": "8 V.S.A. 6014: assumed reinsurance 0.214% / 0.143% / 0.048% / 0.024% by $20M band; direct 0.38% / 0.285% / 0.19% / 0.072%; aggregate annual minimum $7,500, maximum $200,000",
+     "url": "https://legislature.vermont.gov/statutes/section/08/141/06014"
+    },
+    "application_fee": {
+     "status": "verified",
+     "value_basis": "8 V.S.A. 6002: $500 nonrefundable application fee; DFR fee chart (revised 7/2019): actuarial application review $6,000",
+     "url": "https://dfr.vermont.gov/sites/finreg/files/doc_library/fees-&-premium-tax-chart.pdf"
+    },
+    "annual_license_fee": {
+     "status": "verified",
+     "value_basis": "8 V.S.A. 6002: license renewal fee of $500.00 for each year",
+     "url": "https://legislature.vermont.gov/statutes/section/08/141/06002"
+    },
+    "annual_travel_cost": {
+     "status": "assumption",
+     "value_basis": "8 V.S.A. 6002(b) (verified) requires one board meeting a year in Vermont; the travel cost is an assumption",
+     "url": "https://legislature.vermont.gov/statutes/section/08/141/06002"
+    }
+   }
+  },
+  {
+   "id": "utah",
+   "name": "Utah",
+   "onshore": true,
+   "min_capital": 250000,
+   "capital_held": 515223.755607809,
+   "application_fee": 200,
+   "annual_license_fee": 7500,
+   "premium_tax_yr1": 0.0,
+   "premium_tax_5yr": 0.0,
+   "other_annual_costs": 6000,
+   "board_meeting": "Annual governing-body meeting in Utah with an out-of-state attendee, or top-tier UCIA membership",
+   "pv_cost_mean": 2251019.721327637,
+   "saving_vs_gc_mean": -457205.2625705179,
+   "sources": {
+    "min_capital": {
+     "status": "verified",
+     "value_basis": "Utah Code 31A-37-204: pure captive not less than $250,000 (alternative: greater of 20% of aggregate risk or $50,000 if not a pool)",
+     "url": "https://le.utah.gov/xcode/Title31a/Chapter37/C31A-37_1800010118000101.pdf"
+    },
+    "annual_license_fee": {
+     "status": "verified",
+     "value_basis": "Utah Insurance Dept.: 'Annual license fee of $7,500 (includes $250 e-commerce fee)'; 'In lieu of State premium taxes, a flat annual fee is charged'; application submission fee $200",
+     "url": "https://insurance.utah.gov/captive/benefits/"
+    }
+   }
+  },
+  {
+   "id": "bermuda",
+   "name": "Bermuda (Class 1, 953(d) election)",
+   "onshore": false,
+   "min_capital": 120000,
+   "capital_held": 515223.755607809,
+   "application_fee": 3050,
+   "annual_license_fee": 2250,
+   "premium_tax_yr1": 0.0,
+   "premium_tax_5yr": 0.0,
+   "other_annual_costs": 30000,
+   "board_meeting": "No in-domicile board meeting requirement found for Class 1; principal office + BMA-approved principal representative",
+   "pv_cost_mean": 2303488.0996840172,
+   "saving_vs_gc_mean": -509673.64092689834,
+   "sources": {
+    "min_capital": {
+     "status": "verified",
+     "value_basis": "Insurance Act 1978 s.7: minimum share capital $120,000 for Class 1; solvency margin Figure A $120,000 (Figure B, 20% of net premiums, is lower here)",
+     "url": "https://cdn.bma.bm/documents/2023-11-14-13-37-59-Insurance-Act-1978.pdf"
+    },
+    "application_fee": {
+     "status": "verified",
+     "value_basis": "BMA fees effective 1 Jan 2025: application $800 + Class 1 registration $2,250; annual fee $2,250 (2026 schedule not located)",
+     "url": "https://cdn.bma.bm/documents/2025-01-13-09-37-05-2025-Bermuda-Monetary-Authority-Fees.pdf"
+    },
+    "premium_tax": {
+     "status": "secondary",
+     "value_basis": "No Bermuda premium or income tax for exempted companies (law-firm sources); the Corporate Income Tax Act 2023 applies only to MNE groups with >= EUR 750M revenue (threshold verified in the Act)",
+     "url": "https://www.bermudalaws.bm/Laws/Annual%20Law/Acts/2023/Corporate%20Income%20Tax%20Act%202023"
+    },
+    "federal_excise_tax_rate": {
+     "status": "verified",
+     "value_basis": "IRC 4371: 4% of casualty premiums and 1% of reinsurance premiums paid to foreign insurers. An IRC 953(d) electing company 'shall be treated as a domestic corporation', so FET is assumed not to apply (interpretation - confirm with tax counsel)",
+     "url": "https://www.law.cornell.edu/uscode/text/26/4371"
+    },
+    "annual_operating_cost_adjustment": {
+     "status": "assumption",
+     "value_basis": "Offshore manager premium plus 953(d) compliance; no public source"
+    }
+   }
+  },
+  {
+   "id": "cayman",
+   "name": "Cayman Islands (Class B(i), 953(d) election)",
+   "onshore": false,
+   "min_capital": 100000,
+   "capital_held": 515223.755607809,
+   "application_fee": 1220,
+   "annual_license_fee": 12744,
+   "premium_tax_yr1": 0.0,
+   "premium_tax_5yr": 0.0,
+   "other_annual_costs": 25000,
+   "board_meeting": "No board-meeting requirement found; must appoint a Cayman insurance manager (Insurance Law s.6)",
+   "pv_cost_mean": 2354359.995620012,
+   "saving_vs_gc_mean": -560545.5368628924,
+   "sources": {
+    "min_capital": {
+     "status": "verified",
+     "value_basis": "CIMA Insurance (Capital and Solvency) Regulations, Schedule 1: Class B(i) general business MCR US$100,000",
+     "url": "https://www.cima.ky/upimages/lawsregulations/InsuranceCapitalandSolvencyClassesB,CandDInsurersRegulations2018Revision_1524078111_1599480669.PDF"
+    },
+    "annual_license_fee": {
+     "status": "verified",
+     "value_basis": "CIMA fee schedule updated 1 Jan 2026: Class B(i) application CI$1,000 (US$1,219.51); annual fee CI$10,450 (US$12,743.90)",
+     "url": "https://www.cima.ky/upimages/commonfiles/WebsiteFeeSchedule1January2026Update_1770328410.pdf"
+    },
+    "premium_tax": {
+     "status": "secondary",
+     "value_basis": "No premium tax found in the Insurance Law 2010; CIMA FAQ: 'No income, capital gains or corporation taxes are payable in the Cayman Islands.'",
+     "url": "https://www.cima.ky/insurance-faqs"
+    }
+   }
+  }
+ ],
+ "stress_tests": [
+  {
+   "id": "base",
+   "description": "Base",
+   "focus_pv_mean": 2232076.872200597,
+   "saving_vs_gc_mean": -438262.4134434781,
+   "annual_retained_mean": 212779.42436501343,
+   "annual_retained_1_in_200": 784141.2953084523,
+   "prob_surplus_below_min_any_year": 0.1259,
+   "prob_surplus_negative_any_year": 0.01936,
+   "prob_capital_call": 0.1259,
+   "capital_call_1_in_200": 508692.77413761354
+  },
+  {
+   "id": "frequency_up_50",
+   "description": "Frequency +50%",
+   "focus_pv_mean": 2630635.9168093028,
+   "saving_vs_gc_mean": -836821.458052184,
+   "annual_retained_mean": 321471.23824314424,
+   "annual_retained_1_in_200": 998147.9981355609,
+   "prob_surplus_below_min_any_year": 0.26172,
+   "prob_surplus_negative_any_year": 0.07964,
+   "prob_capital_call": 0.26172,
+   "capital_call_1_in_200": 892614.8423939403
+  },
+  {
+   "id": "severity_up_30",
+   "description": "Severity +30% (social inflation)",
+   "focus_pv_mean": 2407993.506916679,
+   "saving_vs_gc_mean": -614179.0481595596,
+   "annual_retained_mean": 259947.79401627442,
+   "annual_retained_1_in_200": 894450.2086909038,
+   "prob_surplus_below_min_any_year": 0.16656,
+   "prob_surplus_negative_any_year": 0.03752,
+   "prob_capital_call": 0.16656,
+   "capital_call_1_in_200": 682274.8028117004
+  },
+  {
+   "id": "combined",
+   "description": "Frequency +30% and severity +30%",
+   "focus_pv_mean": 2698756.1626591166,
+   "saving_vs_gc_mean": -904941.7039019977,
+   "annual_retained_mean": 338353.25489445776,
+   "annual_retained_1_in_200": 1044813.4432382244,
+   "prob_surplus_below_min_any_year": 0.28538,
+   "prob_surplus_negative_any_year": 0.09734,
+   "prob_capital_call": 0.28538,
+   "capital_call_1_in_200": 986348.0136996597
+  },
+  {
+   "id": "zero_yield",
+   "description": "Investment yield 0%",
+   "focus_pv_mean": 2432136.7844574177,
+   "saving_vs_gc_mean": -638322.3257002984,
+   "annual_retained_mean": 212779.42436501343,
+   "annual_retained_1_in_200": 784141.2953084523,
+   "prob_surplus_below_min_any_year": 0.22202,
+   "prob_surplus_negative_any_year": 0.04104,
+   "prob_capital_call": 0.22202,
+   "capital_call_1_in_200": 671421.1132933982
+  }
+ ],
+ "tornado": [
+  {
+   "base_saving_vs_gc": -438262.4134434781,
+   "base_saving_vs_ld": -828398.5476102338
+  },
+  {
+   "label": "Minimum fronting fee ($25k / $150k)",
+   "path": "program_costs.fronting_fee_min",
+   "base_value": 50000,
+   "low_value": 25000,
+   "high_value": 150000,
+   "low_saving_vs_gc": -363175.45704989927,
+   "high_saving_vs_gc": -779463.8800743012,
+   "low_saving_vs_ld": -753311.591216655,
+   "high_saving_vs_ld": -1169600.0142410567,
+   "swing_vs_gc": 416288.4230244019
+  },
+  {
+   "label": "Market rate level (-10% / +20%)",
+   "path": "program_costs.market_rate_multiplier",
+   "base_value": 1.0,
+   "low_value": 0.9,
+   "high_value": 1.2,
+   "low_saving_vs_gc": -560868.5622669104,
+   "high_saving_vs_gc": -196281.29908504718,
+   "low_saving_vs_ld": -828398.5476102338,
+   "high_saving_vs_ld": -828398.5476102334,
+   "swing_vs_gc": 364587.26318186324
+  },
+  {
+   "label": "Captive operating cost ($80k / $150k)",
+   "path": "program_costs.captive_annual_opex",
+   "base_value": 110000,
+   "low_value": 80000,
+   "high_value": 150000,
+   "low_saving_vs_gc": -308620.1798075274,
+   "high_saving_vs_gc": -611118.724958079,
+   "low_saving_vs_ld": -698756.3139742832,
+   "high_saving_vs_ld": -1001254.8591248348,
+   "swing_vs_gc": 302498.54515055165
+  },
+  {
+   "label": "WC guaranteed-cost loss ratio (48% / 65%)",
+   "path": "lines.workers_comp.gc_loss_ratio",
+   "base_value": 0.55,
+   "low_value": 0.48,
+   "high_value": 0.65,
+   "low_saving_vs_gc": -314211.1262611224,
+   "high_saving_vs_gc": -569129.7054160732,
+   "low_saving_vs_ld": -828398.5476102338,
+   "high_saving_vs_ld": -828398.5476102338,
+   "swing_vs_gc": 254918.5791549508
+  },
+  {
+   "label": "Claim frequency (x0.8 / x1.3)",
+   "path": "adjustments.frequency_multiplier",
+   "base_value": 1.0,
+   "low_value": 0.8,
+   "high_value": 1.3,
+   "low_saving_vs_gc": -527290.9472521357,
+   "high_saving_vs_gc": -313162.79247053183,
+   "low_saving_vs_ld": -833135.2638561727,
+   "high_saving_vs_ld": -821212.8906357498,
+   "swing_vs_gc": 214128.1547816039
+  },
+  {
+   "label": "Discount rate (4% / 10% = WACC view)",
+   "path": "economics.discount_rate",
+   "base_value": 0.06,
+   "low_value": 0.04,
+   "high_value": 0.1,
+   "low_saving_vs_gc": -381414.89805930894,
+   "high_saving_vs_gc": -524792.3560224526,
+   "low_saving_vs_ld": -745094.7414295278,
+   "high_saving_vs_ld": -954653.55467156,
+   "swing_vs_gc": 143377.45796314365
+  },
+  {
+   "label": "Captive investment yield (2.5% / 5.5%)",
+   "path": "economics.investment_yield",
+   "base_value": 0.045,
+   "low_value": 0.025,
+   "high_value": 0.055,
+   "low_saving_vs_gc": -531206.0347722345,
+   "high_saving_vs_gc": -389164.4326367359,
+   "low_saving_vs_ld": -921342.1689389902,
+   "high_saving_vs_ld": -779300.5668034917,
+   "swing_vs_gc": 142041.6021354986
+  },
+  {
+   "label": "Claim severity (x0.8 / x1.3)",
+   "path": "adjustments.severity_multiplier",
+   "base_value": 1.0,
+   "low_value": 0.8,
+   "high_value": 1.3,
+   "low_saving_vs_gc": -503131.0641261673,
+   "high_saving_vs_gc": -374178.6937503764,
+   "low_saving_vs_ld": -829958.6066997759,
+   "high_saving_vs_ld": -826187.2781053775,
+   "swing_vs_gc": 128952.37037579087
+  },
+  {
+   "label": "Claims handling (7% / 14% of losses)",
+   "path": "program_costs.claims_handling_rate",
+   "base_value": 0.1,
+   "low_value": 0.07,
+   "high_value": 0.14,
+   "low_saving_vs_gc": -415782.06028597796,
+   "high_saving_vs_gc": -468239.6727858766,
+   "low_saving_vs_ld": -825896.1282960816,
+   "high_saving_vs_ld": -831738.5618281687,
+   "swing_vs_gc": 52457.61249989865
+  },
+  {
+   "label": "Captive premium risk margin (0% / 20%)",
+   "path": "captive.risk_margin",
+   "base_value": 0.1,
+   "low_value": 0.0,
+   "high_value": 0.2,
+   "low_saving_vs_gc": -438592.2869759201,
+   "high_saving_vs_gc": -437966.2865526376,
+   "low_saving_vs_ld": -828728.4211426758,
+   "high_saving_vs_ld": -828102.4207193933,
+   "swing_vs_gc": 626.0004232825013
+  },
+  {
+   "label": "Collateral factor (100% / 150%)",
+   "path": "program_costs.collateral_factor",
+   "base_value": 1.25,
+   "low_value": 1.0,
+   "high_value": 1.5,
+   "low_saving_vs_gc": -438257.57131920115,
+   "high_saving_vs_gc": -438678.5532693902,
+   "low_saving_vs_ld": -833310.8165140637,
+   "high_saving_vs_ld": -823897.5764080391,
+   "swing_vs_gc": 420.98195018904516
+  },
+  {
+   "label": "Fronting fee (4% / 10%)",
+   "path": "program_costs.fronting_fee_rate",
+   "base_value": 0.07,
+   "low_value": 0.04,
+   "high_value": 0.1,
+   "low_saving_vs_gc": -438262.4134434781,
+   "high_saving_vs_gc": -438262.4134434781,
+   "low_saving_vs_ld": -828398.5476102338,
+   "high_saving_vs_ld": -828398.5476102338,
+   "swing_vs_gc": 0.0
+  }
+ ],
+ "scenarios": [
+  {
+   "id": "base",
+   "description": "Base assumptions",
+   "pv_mean_by_program": {
+    "gc": 1793814.4587571186,
+    "ld_250": 1403678.324590363,
+    "cap_100": 2387528.3531556246,
+    "cap_250": 2232076.872200597,
+    "cap_500": 2429060.7157048685,
+    "cell_250": 1899893.9917666144
+   },
+   "best_program": "ld_250",
+   "focus_saving_vs_gc": -438262.4134434781,
+   "focus_saving_vs_ld": -828398.5476102338,
+   "focus_prob_cheaper_than_gc": 0.01428,
+   "focus_flags": {
+    "premium_within_831b_limit": true,
+    "loss_ratio_below_micro_captive_tolerance": false
+   },
+   "focus_expected_loss_ratio": 0.627993888393426
+  },
+  {
+   "id": "hard_market",
+   "description": "Hard market: commercial rates +25% (GC and excess)",
+   "pv_mean_by_program": {
+    "gc": 2242268.073446399,
+    "ld_250": 1549997.167429121,
+    "cap_100": 2617449.6861062255,
+    "cap_250": 2378395.7150393547,
+    "cap_500": 2502839.8021183745,
+    "cell_250": 2046212.8346053723
+   },
+   "best_program": "ld_250",
+   "focus_saving_vs_gc": -136127.64159295615,
+   "focus_saving_vs_ld": -828398.5476102334,
+   "focus_prob_cheaper_than_gc": 0.30888,
+   "focus_flags": {
+    "premium_within_831b_limit": true,
+    "loss_ratio_below_micro_captive_tolerance": false
+   },
+   "focus_expected_loss_ratio": 0.627993888393426
+  },
+  {
+   "id": "soft_market",
+   "description": "Soft market: commercial rates -10%",
+   "pv_mean_by_program": {
+    "gc": 1614433.0128814073,
+    "ld_250": 1346903.0275380837,
+    "cap_100": 2295559.8199753845,
+    "cap_250": 2175301.575148317,
+    "cap_500": 2399694.2253369964,
+    "cell_250": 1843118.6947143348
+   },
+   "best_program": "ld_250",
+   "focus_saving_vs_gc": -560868.5622669104,
+   "focus_saving_vs_ld": -828398.5476102338,
+   "focus_prob_cheaper_than_gc": 0.00032,
+   "focus_flags": {
+    "premium_within_831b_limit": true,
+    "loss_ratio_below_micro_captive_tolerance": false
+   },
+   "focus_expected_loss_ratio": 0.627993888393426
+  },
+  {
+   "id": "adverse_losses",
+   "description": "Loss pick too optimistic: frequency +20%, severity +20% (premiums priced on the old pick)",
+   "pv_mean_by_program": {
+    "gc": 1793814.4587571186,
+    "ld_250": 1686478.6891488016,
+    "cap_100": 2616016.7516284627,
+    "cap_250": 2535434.9948591692,
+    "cap_500": 3089878.3382111974,
+    "cell_250": 2203401.6571226735
+   },
+   "best_program": "ld_250",
+   "focus_saving_vs_gc": -741620.5361020502,
+   "focus_saving_vs_ld": -848956.3057103676,
+   "focus_prob_cheaper_than_gc": 0.00032,
+   "focus_flags": {
+    "premium_within_831b_limit": true,
+    "loss_ratio_below_micro_captive_tolerance": false
+   },
+   "focus_expected_loss_ratio": 0.627993888393426
+  },
+  {
+   "id": "safety_program",
+   "description": "Loss-control success: lost-time frequency -25% after captive formation (not credited by GC market)",
+   "pv_mean_by_program": {
+    "gc": 1793814.4587571186,
+    "ld_250": 1318262.0302543584,
+    "cap_100": 2320118.8080983846,
+    "cap_250": 2141782.1365904305,
+    "cap_500": 2260489.837091466,
+    "cell_250": 1809586.9856585138
+   },
+   "best_program": "ld_250",
+   "focus_saving_vs_gc": -347967.6778333113,
+   "focus_saving_vs_ld": -823520.106336072,
+   "focus_prob_cheaper_than_gc": 0.03532,
+   "focus_flags": {
+    "premium_within_831b_limit": true,
+    "loss_ratio_below_micro_captive_tolerance": false
+   },
+   "focus_expected_loss_ratio": 0.627993888393426
+  },
+  {
+   "id": "no_tax_deduction",
+   "description": "IRS treats captive as self-insurance (no risk distribution): deduct claims only when paid",
+   "pv_mean_by_program": {
+    "gc": 1793814.4587571186,
+    "ld_250": 1403678.324590363,
+    "cap_100": 2447724.8165867385,
+    "cap_250": 2301737.8540653987,
+    "cap_500": 2522318.272531872,
+    "cell_250": 1956142.669825697
+   },
+   "best_program": "ld_250",
+   "focus_saving_vs_gc": -507923.39530827943,
+   "focus_saving_vs_ld": -898059.5294750351,
+   "focus_prob_cheaper_than_gc": 0.00194,
+   "focus_flags": {
+    "premium_within_831b_limit": true,
+    "loss_ratio_below_micro_captive_tolerance": false
+   },
+   "focus_expected_loss_ratio": 0.627993888393426
+  },
+  {
+   "id": "wacc_view",
+   "description": "Discount every cash flow at a 10% WACC instead of the 6% opportunity cost of cash",
+   "pv_mean_by_program": {
+    "gc": 1689040.861108065,
+    "ld_250": 1259179.6624589579,
+    "cap_100": 2324693.472770726,
+    "cap_250": 2213833.2171305176,
+    "cap_500": 2361274.1121318317,
+    "cell_250": 1887346.5746962086
+   },
+   "best_program": "ld_250",
+   "focus_saving_vs_gc": -524792.3560224526,
+   "focus_saving_vs_ld": -954653.55467156,
+   "focus_prob_cheaper_than_gc": 2e-05,
+   "focus_flags": {
+    "premium_within_831b_limit": true,
+    "loss_ratio_below_micro_captive_tolerance": false
+   },
+   "focus_expected_loss_ratio": 0.627993888393426
+  },
+  {
+   "id": "elect_831b",
+   "description": "Captive elects IRC 831(b): taxed on investment income only (eligibility and IRS-scrutiny flags reported)",
+   "pv_mean_by_program": {
+    "gc": 1793814.4587571186,
+    "ld_250": 1403678.324590363,
+    "cap_100": 2397701.052375897,
+    "cap_250": 2237941.321659265,
+    "cap_500": 2436995.61012307,
+    "cell_250": 1896892.4302207623
+   },
+   "best_program": "ld_250",
+   "focus_saving_vs_gc": -444126.8629021461,
+   "focus_saving_vs_ld": -834262.9970689018,
+   "focus_prob_cheaper_than_gc": 0.05672,
+   "focus_flags": {
+    "premium_within_831b_limit": true,
+    "loss_ratio_below_micro_captive_tolerance": false
+   },
+   "focus_expected_loss_ratio": 0.627993888393426
+  },
+  {
+   "id": "double_size",
+   "description": "Company twice the size (exposure x2) - where does a captive start to make sense?",
+   "pv_mean_by_program": {
+    "gc": 3587628.917514237,
+    "ld_250": 2805961.440895605,
+    "cap_100": 3935981.686139439,
+    "cap_250": 3609536.952013291,
+    "cap_500": 3650688.9491768046,
+    "cell_250": 3280024.8177962843
+   },
+   "best_program": "ld_250",
+   "focus_saving_vs_gc": -21908.03449905313,
+   "focus_saving_vs_ld": -803575.5111176865,
+   "focus_prob_cheaper_than_gc": 0.50284,
+   "focus_flags": {
+    "premium_within_831b_limit": true,
+    "loss_ratio_below_micro_captive_tolerance": false
+   },
+   "focus_expected_loss_ratio": 0.74283934866506
+  }
+ ],
+ "breakeven": {
+  "rows": [
+   {
+    "scale": 0.5,
+    "gc_premium_yr1": 243489.77627564984,
+    "ld_saving_vs_gc": 160054.67369615455,
+    "cap_100_saving_vs_gc": -716549.5716025869,
+    "cap_100_saving_vs_ld": -876604.2452987414,
+    "cap_250_saving_vs_gc": -680392.6480785705,
+    "cap_250_saving_vs_ld": -840447.321774725,
+    "cap_500_saving_vs_gc": -906044.4932041693,
+    "cap_500_saving_vs_ld": -1066099.1669003237,
+    "cell_250_saving_vs_gc": -346932.3553584723,
+    "cell_250_saving_vs_ld": -506987.02905462694
+   },
+   {
+    "scale": 1.0,
+    "gc_premium_yr1": 486979.5525512997,
+    "ld_saving_vs_gc": 391322.8995351922,
+    "cap_100_saving_vs_gc": -592917.998866709,
+    "cap_100_saving_vs_ld": -984240.8984019012,
+    "cap_250_saving_vs_gc": -437564.8664034372,
+    "cap_250_saving_vs_ld": -828887.7659386295,
+    "cap_500_saving_vs_gc": -628614.2315361849,
+    "cap_500_saving_vs_ld": -1019937.1310713772,
+    "cell_250_saving_vs_gc": -105403.5659424262,
+    "cell_250_saving_vs_ld": -496726.4654776184
+   },
+   {
+    "scale": 1.5,
+    "gc_premium_yr1": 730469.3288269495,
+    "ld_saving_vs_gc": 588237.5805191519,
+    "cap_100_saving_vs_gc": -471055.64943244564,
+    "cap_100_saving_vs_ld": -1059293.2299515975,
+    "cap_250_saving_vs_gc": -227981.1261479192,
+    "cap_250_saving_vs_ld": -816218.7066670712,
+    "cap_500_saving_vs_gc": -333285.4450434188,
+    "cap_500_saving_vs_ld": -921523.0255625708,
+    "cell_250_saving_vs_gc": 102806.56280254005,
+    "cell_250_saving_vs_ld": -485431.01771661185
+   },
+   {
+    "scale": 2.0,
+    "gc_premium_yr1": 973959.1051025994,
+    "ld_saving_vs_gc": 778926.2875158155,
+    "cap_100_saving_vs_gc": -350252.88414267905,
+    "cap_100_saving_vs_ld": -1129179.1716584945,
+    "cap_250_saving_vs_gc": -24615.876145500653,
+    "cap_250_saving_vs_ld": -803542.1636613162,
+    "cap_500_saving_vs_gc": -70131.38630111367,
+    "cap_500_saving_vs_ld": -849057.6738169291,
+    "cell_250_saving_vs_gc": 304892.2569358877,
+    "cell_250_saving_vs_ld": -474034.03057992784
+   },
+   {
+    "scale": 2.5,
+    "gc_premium_yr1": 1217448.8813782493,
+    "ld_saving_vs_gc": 977726.5347614826,
+    "cap_100_saving_vs_gc": -222837.2447393119,
+    "cap_100_saving_vs_ld": -1200563.7795007946,
+    "cap_250_saving_vs_gc": 164276.7485622552,
+    "cap_250_saving_vs_ld": -813449.7861992272,
+    "cap_500_saving_vs_gc": 188521.56204427613,
+    "cap_500_saving_vs_ld": -789204.9727172063,
+    "cell_250_saving_vs_gc": 506829.8465809541,
+    "cell_250_saving_vs_ld": -470896.68818052846
+   },
+   {
+    "scale": 3.0,
+    "gc_premium_yr1": 1460938.657653899,
+    "ld_saving_vs_gc": 1170848.828873411,
+    "cap_100_saving_vs_gc": -118504.9723368098,
+    "cap_100_saving_vs_ld": -1289353.8012102207,
+    "cap_250_saving_vs_gc": 340894.2879010952,
+    "cap_250_saving_vs_ld": -829954.5409723159,
+    "cap_500_saving_vs_gc": 441129.65617716504,
+    "cap_500_saving_vs_ld": -729719.172696246,
+    "cell_250_saving_vs_gc": 682545.4044741167,
+    "cell_250_saving_vs_ld": -488303.42439929437
+   },
+   {
+    "scale": 4.0,
+    "gc_premium_yr1": 1947918.2102051987,
+    "ld_saving_vs_gc": 1563599.1078315703,
+    "cap_100_saving_vs_gc": 75377.0094295821,
+    "cap_100_saving_vs_ld": -1488222.0984019882,
+    "cap_250_saving_vs_gc": 698981.9328448105,
+    "cap_250_saving_vs_ld": -864617.1749867598,
+    "cap_500_saving_vs_gc": 957988.883211388,
+    "cap_500_saving_vs_ld": -605610.2246201824,
+    "cell_250_saving_vs_gc": 1038151.2623767856,
+    "cell_250_saving_vs_ld": -525447.8454547846
+   },
+   {
+    "scale": 5.0,
+    "gc_premium_yr1": 2434897.7627564985,
+    "ld_saving_vs_gc": 1961487.7426336044,
+    "cap_100_saving_vs_gc": 278697.2670556636,
+    "cap_100_saving_vs_ld": -1682790.4755779407,
+    "cap_250_saving_vs_gc": 1064521.693396549,
+    "cap_250_saving_vs_ld": -896966.0492370552,
+    "cap_500_saving_vs_gc": 1469836.8068749146,
+    "cap_500_saving_vs_ld": -491650.9357586897,
+    "cell_250_saving_vs_gc": 1401333.954497979,
+    "cell_250_saving_vs_ld": -560153.7881356254
+   },
+   {
+    "scale": 6.0,
+    "gc_premium_yr1": 2921877.315307798,
+    "ld_saving_vs_gc": 2341648.3607611675,
+    "cap_100_saving_vs_gc": 467061.4358435923,
+    "cap_100_saving_vs_ld": -1874586.924917575,
+    "cap_250_saving_vs_gc": 1411109.8391622785,
+    "cap_250_saving_vs_ld": -930538.521598889,
+    "cap_500_saving_vs_gc": 1947429.8677824715,
+    "cap_500_saving_vs_ld": -394218.4929786959,
+    "cell_250_saving_vs_gc": 1745627.933678777,
+    "cell_250_saving_vs_ld": -596020.4270823904
+   }
+  ],
+  "captive_ids": [
+   "cap_100",
+   "cap_250",
+   "cap_500",
+   "cell_250"
+  ],
+  "crossings": {
+   "cap_100": {
+    "vs_gc": {
+     "gc_premium_yr1": 1758591.3733828824,
+     "scale": 3.6112222046481675
+    },
+    "vs_ld": null
+   },
+   "cap_250": {
+    "vs_gc": {
+     "gc_premium_yr1": 1005689.9055230509,
+     "scale": 2.0651583834561698
+    },
+    "vs_ld": null
+   },
+   "cap_500": {
+    "vs_gc": {
+     "gc_premium_yr1": 1039979.1356864251,
+     "scale": 2.135570436659907
+    },
+    "vs_ld": null
+   },
+   "cell_250": {
+    "vs_gc": {
+     "gc_premium_yr1": 610242.9636287376,
+     "scale": 1.253118247843585
+    },
+    "vs_ld": null
+   }
+  }
+ },
+ "recommendation": {
+  "decision": "large_deductible_now_revisit_captive",
+  "headline": "Do not form a single-parent captive now. Move from guaranteed cost to a large deductible $250k program, which lowers the expected 5-year cost by $390,136 (22%). Revisit a captive as premium grows.",
+  "best_program": "ld_250",
+  "best_label": "Large deductible $250k",
+  "focus_saving_vs_gc": -438262.4134434781,
+  "focus_saving_vs_ld": -828398.5476102338,
+  "focus_prob_cheaper_than_gc": 0.01428,
+  "best_captive": "cell_250",
+  "best_captive_label": "Cell captive $250k",
+  "best_captive_saving_vs_gc": -106079.53300949543,
+  "focus_breakeven_vs_gc": {
+   "gc_premium_yr1": 1005689.9055230509,
+   "scale": 2.0651583834561698
+  },
+  "focus_breakeven_vs_ld": null,
+  "gc_premium_yr1": 486979.5525512997
+ }
+}
